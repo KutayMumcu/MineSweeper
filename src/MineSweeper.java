@@ -8,8 +8,8 @@ public class MineSweeper extends JFrame{
 
     public MineSweeper() {
         super("MineSweeper");
-        this.width = 600;
-        this.height = 600;
+        this.width = 800;
+        this.height = 800;
         getInitialInformations();
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(width, height);
@@ -32,12 +32,31 @@ public class MineSweeper extends JFrame{
 
     private void getInitialInformations() {
         Scanner sc = new Scanner(System.in);
-        System.out.println("Enter Rows: ");
-        this.rows = sc.nextInt();
-        System.out.println("Enter Columns: ");
-        this.cols = sc.nextInt();
-        System.out.println("Enter Mine Number: ");
-        this.mineCount = sc.nextInt();
+        while (true){
+            System.out.println("Enter Rows: ");
+            this.rows = sc.nextInt();
+            if (this.rows > 0 && this.rows < 18){
+                break;
+            }
+            System.out.println("Please enter valid number (1-17)");
+        }
+        while (true){
+            System.out.println("Enter Columns: ");
+            this.cols = sc.nextInt();
+            if (this.cols > 0 && this.cols < 18){
+                break;
+            }
+            System.out.println("Please enter valid number (1-17)");
+        }
+        while (true){
+            System.out.println("Enter Mine Number: ");
+            this.mineCount = sc.nextInt();
+            if (this.mineCount > 0 && mineCount < rows * cols - 1){
+                break;
+            }
+            System.out.println("Please enter valid number (1-"+ (rows * cols - 1) +")");
+        }
+
         createBoard(rows, cols, mineCount);
     }
 

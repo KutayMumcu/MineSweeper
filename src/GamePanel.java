@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Random;
 
 public class GamePanel extends JPanel {
 
@@ -144,11 +145,16 @@ public class GamePanel extends JPanel {
     private void initializeBoard(Box[][] board) {
         int rows = board.length;
         int cols = board[0].length;
+        int mineNumber = mineCount;
 
-        for (int i = 0; i < 10; i++) {
-            int x = (int)(Math.random() * rows);
-            int y = (int)(Math.random() * cols);
-            board[x][y].isMined = true;
+        while (mineNumber != 0) {
+            Random rand = new Random();
+            int row = rand.nextInt(rows);
+            int col = rand.nextInt(cols);
+            if (!board[row][col].isMined) {
+                board[row][col].isMined = true;
+                mineNumber--;
+            }
         }
 
         for (Box[] boxes : board) {
