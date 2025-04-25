@@ -3,12 +3,16 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Random;
+import java.io.*;
+import java.nio.file.*;
 
 public class GamePanel extends JPanel {
 
     private GameListener listener;
     private int mineCount,rows,cols;
+    private double timePassed;
     public GamePanel(Box[][] board, int mineCount, GameListener listener) {
+        this.timePassed = 0.0;
         this.mineCount = mineCount;
         this.listener = listener;
         this.rows = board.length;
@@ -18,6 +22,7 @@ public class GamePanel extends JPanel {
     }
 
     private void start(Box[][] board) {
+        long startTime = System.currentTimeMillis();
         int cols = board[0].length;
 
         for (Box[] boxes : board) {
@@ -55,7 +60,6 @@ public class GamePanel extends JPanel {
 
                                 if (currentBox.isMined) {
                                     currentBox.setText("💣");
-                                    System.out.println("Game Over");
                                     endGame(board, 0);
                                 } else {
                                     String value = currentBox.getActionCommand();
@@ -66,6 +70,7 @@ public class GamePanel extends JPanel {
                                     }
                                 }
                             }
+                            timePassed = System.currentTimeMillis() - startTime;
                             checkIsItDone(board);
                         }
                     }
@@ -85,7 +90,39 @@ public class GamePanel extends JPanel {
             }
         }
         if (openCellCount == board.length * board[0].length - mineCount) {
+            System.out.println(timePassed/1000);
+            updateScore();
             endGame(board, 1);
+        }
+    }
+
+    private void updateScore() {
+        double score = (mineCount * rows * cols) / (timePassed/1000);
+
+        try {
+            Double oldScore = 0.0;
+            String fileName = "scores.txt";
+
+            // Dosya varsa oku
+            if (Files.exists(Paths.get(fileName))) {
+                String content = new String(Files.readAllBytes(Paths.get(fileName))).trim();
+                if (!content.isEmpty()) {
+                    oldScore = Double.parseDouble(content);
+                }
+            }
+
+            // Yeni skor daha büyükse dosyaya yaz
+            if (score > oldScore) {
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+                    writer.write(String.valueOf(score));
+                }
+                System.out.println("Yeni skor yazıldı: " + score);
+            } else {
+                System.out.println("Mevcut skor daha yüksek veya eşit: " + oldScore);
+            }
+
+        } catch (IOException | NumberFormatException e) {
+            System.err.println("Hata oluştu: " + e.getMessage());
         }
     }
 
