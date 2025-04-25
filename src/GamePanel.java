@@ -97,13 +97,13 @@ public class GamePanel extends JPanel {
     }
 
     private void updateScore() {
-        double score = (mineCount * rows * cols) / (timePassed/1000);
+        double score = (mineCount * 1000.0) / (timePassed * (1 + 0.05 * (rows + cols)));
+        score *= 1000;
 
         try {
             Double oldScore = 0.0;
             String fileName = "scores.txt";
 
-            // Dosya varsa oku
             if (Files.exists(Paths.get(fileName))) {
                 String content = new String(Files.readAllBytes(Paths.get(fileName))).trim();
                 if (!content.isEmpty()) {
@@ -111,7 +111,6 @@ public class GamePanel extends JPanel {
                 }
             }
 
-            // Yeni skor daha büyükse dosyaya yaz
             if (score > oldScore) {
                 try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
                     writer.write(String.valueOf(score));
