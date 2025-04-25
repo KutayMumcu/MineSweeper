@@ -1,63 +1,70 @@
+// MineSweeper.java
 import javax.swing.*;
 import java.util.Random;
-import java.util.Scanner;
 
-public class MineSweeper extends JFrame{
-    private int width,height, rows, cols, mineCount;
+public class MineSweeper extends JFrame implements GameListener{
+    private int width, height, rows, cols, mineCount;
     private Box[][] grid;
 
     public MineSweeper() {
         super("MineSweeper");
         this.width = 800;
         this.height = 800;
-        getInitialInformations();
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(width, height);
-        this.setVisible(true);
         this.setResizable(false);
         this.setLocationRelativeTo(null);
 
-        addPanel();
+        showMenu();
+    }
+
+    private void showGamePanel(Box[][] board, int mineCount) {
+        GamePanel gamePanel = new GamePanel(board, mineCount, this);
+        setContentPane(gamePanel);
+        revalidate();
+        repaint();
+    }
+
+    @Override
+    public void onRestart(int rows, int cols, int mineCount) {
+        createBoard(rows, cols, mineCount);
+        showGamePanel(grid, mineCount);
+    }
+
+    @Override
+    public void onReturnToMenu() {
+        showMenu();
+    }
+
+    private void showMenu() {
+        MenuPanel menuPanel = new MenuPanel();
+        setContentPane(menuPanel);
+        revalidate();
+        repaint();
+
+        menuPanel.setStartAction(e -> {
+            try {
+                rows = menuPanel.getRows();
+                cols = menuPanel.getCols();
+                mineCount = menuPanel.getMineCount();
+
+                if (rows < 3 || rows > 17 || cols < 3 || cols > 17 || mineCount < 1 || mineCount >= rows * cols) {
+                    JOptionPane.showMessageDialog(this, "Please enter valid values:\nRows/Cols: 3-17\nMines: 1 to " + (rows * cols - 1));
+                    return;
+                }
+
+                createBoard(rows, cols, mineCount);
+                GamePanel gamePanel = new GamePanel(grid, mineCount, this);
+                setContentPane(gamePanel);
+                revalidate();
+                repaint();
+
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Please enter valid integers.");
+            }
+        });
 
         this.setVisible(true);
-    }
-
-    private void addPanel(){
-        try {
-            this.add(new GamePanel(grid, mineCount));
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    private void getInitialInformations() {
-        Scanner sc = new Scanner(System.in);
-        while (true){
-            System.out.println("Enter Rows: ");
-            this.rows = sc.nextInt();
-            if (this.rows > 2 && this.rows < 18){
-                break;
-            }
-            System.out.println("Please enter valid number (3-17)");
-        }
-        while (true){
-            System.out.println("Enter Columns: ");
-            this.cols = sc.nextInt();
-            if (this.cols > 2 && this.cols < 18){
-                break;
-            }
-            System.out.println("Please enter valid number (3-17)");
-        }
-        while (true){
-            System.out.println("Enter Mine Number: ");
-            this.mineCount = sc.nextInt();
-            if (this.mineCount > 0 && mineCount < rows * cols - 1){
-                break;
-            }
-            System.out.println("Please enter valid number (1-"+ (rows * cols - 1) +")");
-        }
-
-        createBoard(rows, cols, mineCount);
     }
 
     private void createBoard(int rows, int cols, int mineNumber) {

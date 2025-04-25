@@ -6,10 +6,14 @@ import java.util.Random;
 
 public class GamePanel extends JPanel {
 
-    private int mineCount;
-    public GamePanel(Box[][] board, int mineCount) {
+    private GameListener listener;
+    private int mineCount,rows,cols;
+    public GamePanel(Box[][] board, int mineCount, GameListener listener) {
         this.mineCount = mineCount;
-        setLayout(new GridLayout(board.length, board[0].length));
+        this.listener = listener;
+        this.rows = board.length;
+        this.cols = board[0].length;
+        setLayout(new GridLayout(rows, cols));
         start(board);
     }
 
@@ -86,17 +90,17 @@ public class GamePanel extends JPanel {
     }
 
     private void endGame(Box[][] board, int message) {
-        int option = 1;
+        int option;
         if (message == 1) {
             option = JOptionPane.showOptionDialog(this,
                     "You Won, Congratulations!",
                     "You Won!",
-                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.YES_NO_OPTION,
                     JOptionPane.INFORMATION_MESSAGE,
                     null,
-                    new Object[] { "Restart" },
+                    new Object[]{"Restart", "Return to Menu"},
                     "Restart");
-        }else if (message == 0) {
+        } else {
             for (Box[] boxes : board) {
                 for (Box box : boxes) {
                     box.setEnabled(false);
@@ -104,7 +108,7 @@ public class GamePanel extends JPanel {
                         box.setText("💣");
                     } else if (!box.isMined && box.isFlagged) {
                         box.setText("❌");
-                    }else {
+                    } else {
                         box.setText(box.getActionCommand());
                     }
                 }
@@ -113,15 +117,17 @@ public class GamePanel extends JPanel {
             option = JOptionPane.showOptionDialog(this,
                     "Game Over! You hit a mine!",
                     "Game Over",
-                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.YES_NO_OPTION,
                     JOptionPane.INFORMATION_MESSAGE,
                     null,
-                    new Object[] { "Restart" },
+                    new Object[]{"Restart", "Return to Menu"},
                     "Restart");
         }
-        // If the "Restart" button is clicked (option 0)
+
         if (option == 0) {
-            restartGame(board);
+            listener.onRestart(rows, cols, mineCount);
+        } else if (option == 1) {
+            listener.onReturnToMenu();
         }
     }
 
@@ -136,9 +142,6 @@ public class GamePanel extends JPanel {
                 box.setEnabled(true); // Enable all boxes again
             }
         }
-
-        // Here you should reinitialize the board with mines and other settings
-        // This could be done by calling a method that sets mines randomly and calculates numbers
         initializeBoard(board);
     }
 
