@@ -35,18 +35,18 @@ public class MineSweeper extends JFrame{
         while (true){
             System.out.println("Enter Rows: ");
             this.rows = sc.nextInt();
-            if (this.rows > 0 && this.rows < 18){
+            if (this.rows > 2 && this.rows < 18){
                 break;
             }
-            System.out.println("Please enter valid number (1-17)");
+            System.out.println("Please enter valid number (3-17)");
         }
         while (true){
             System.out.println("Enter Columns: ");
             this.cols = sc.nextInt();
-            if (this.cols > 0 && this.cols < 18){
+            if (this.cols > 2 && this.cols < 18){
                 break;
             }
-            System.out.println("Please enter valid number (1-17)");
+            System.out.println("Please enter valid number (3-17)");
         }
         while (true){
             System.out.println("Enter Mine Number: ");
