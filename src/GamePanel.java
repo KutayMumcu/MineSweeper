@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.DecimalFormat;
 import java.util.Random;
 import java.io.*;
 import java.nio.file.*;
@@ -11,8 +12,10 @@ public class GamePanel extends JPanel {
     private GameListener listener;
     private int mineCount,rows,cols;
     private double timePassed;
+    private double score;
     public GamePanel(Box[][] board, int mineCount, GameListener listener) {
         this.timePassed = 0.0;
+        this.score = 0.0;
         this.mineCount = mineCount;
         this.listener = listener;
         this.rows = board.length;
@@ -97,7 +100,7 @@ public class GamePanel extends JPanel {
     }
 
     private void updateScore() {
-        double score = (mineCount * 1000.0) / (timePassed * (1 + 0.05 * (rows + cols)));
+        score = (mineCount * 1000.0) / (timePassed * (1 + 0.05 * (rows + cols)));
         score *= 1000;
 
         try {
@@ -127,9 +130,12 @@ public class GamePanel extends JPanel {
 
     private void endGame(Box[][] board, int message) {
         int option;
+        DecimalFormat df = new DecimalFormat("#.##");
+        String formattedScore = df.format(score);
         if (message == 1) {
             option = JOptionPane.showOptionDialog(this,
-                    "You Won, Congratulations!",
+                    "You Won, Congratulations!\n " +
+                            "Your Score: " + formattedScore,
                     "You Won!",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.INFORMATION_MESSAGE,
